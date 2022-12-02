@@ -1,0 +1,19 @@
+{
+  "name": "@emojiiii/iframe-promise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "iframe",
+    "postMessage",
+    "promise"
+  ],
+  "author": "emojiiii",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  }
+}
