@@ -21,12 +21,12 @@ export const useConnectParent = (c: IConfig) => {
      * @param type 
      * @param data 
      */
-    const postMessage = (type: string, ...args: any[]) => {
+    const postMessage = (type: string, params?: Record<string, any>) => {
         const uid = getUID()
         window.parent.postMessage({
             type,
             uid,
-            ...args
+            ...params
         }, "*")
         return {
             uid,

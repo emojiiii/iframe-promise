@@ -7,7 +7,7 @@ import type { IConfig } from "./message";
 export declare const useConnectParent: (c: IConfig) => {
     addlistenerMessage: () => void;
     removeListenerMessage: () => void;
-    postMessage: (type: string, ...args: any[]) => {
+    postMessage: (type: string, params?: Record<string, any>) => {
         uid: string;
         type: string;
     };
