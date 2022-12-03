@@ -2,18 +2,27 @@
   "name": "@emojiiii/iframe-promise",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.min.js",
+  "types": "./types/index.d.ts",
   "scripts": {
-    "build": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild ./lib/index.ts --outfile=./dist/index.min.js --bundle --loader:.ts=ts --minify --sourcemap",
+    "build:type": "tsc --emitDeclarationOnly"
   },
   "keywords": [
     "iframe",
     "postMessage",
     "promise"
   ],
+  "files": [
+    "dist",
+    "lib",
+    "types"
+  ],
   "author": "emojiiii",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "16.18.1",
+    "esbuild": "^0.15.16",
     "typescript": "^4.9.3"
   }
 }
