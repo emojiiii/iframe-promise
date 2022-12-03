@@ -11,7 +11,7 @@ export interface IConnectIframeConfig extends IConfig {
     /**
      * callback
      */
-    callback?: (message: Message) => void;
+    callback?: (message: MessageEvent<Message>) => void;
 }
 /**
  * connect iframe to post message

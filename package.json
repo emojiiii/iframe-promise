@@ -1,13 +1,14 @@
 {
   "name": "@emojiiii/iframe-promise",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "packageManager": "pnpm@7.17.1",
   "main": "./dist/index.min.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "esbuild ./lib/index.ts --outfile=./dist/index.min.js --bundle --loader:.ts=ts --minify --sourcemap",
-    "build:type": "tsc --emitDeclarationOnly"
+    "build": "esbuild ./lib/index.ts --outfile=./dist/index.min.js --bundle --loader:.ts=ts --format=esm",
+    "build:type": "tsc --emitDeclarationOnly",
+    "build:full": "pnpm build && pnpm build:type"
   },
   "keywords": [
     "iframe",

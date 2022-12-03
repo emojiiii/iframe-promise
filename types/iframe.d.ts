@@ -11,5 +11,5 @@ export declare const useConnectParent: (c: IConfig) => {
         uid: string;
         type: string;
     };
-    postPromiseMessage: <T = any>(type: string, data: T) => Promise<unknown>;
+    postPromiseMessage: <T = any>(type: string, data?: T | undefined) => Promise<unknown>;
 };

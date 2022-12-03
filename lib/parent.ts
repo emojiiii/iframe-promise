@@ -1,5 +1,4 @@
 import type { IConfig, Message, MessageHandler } from "./message"
-import { getUID } from "./utils"
 
 export const parentTaskMap = new Map<string, MessageHandler>()
 
@@ -14,7 +13,7 @@ export interface IConnectIframeConfig extends IConfig {
     /**
      * callback 
      */
-     callback?: (message: Message) => void
+     callback?: (message: MessageEvent<Message>) => void
 }
 
 /**
@@ -47,7 +46,7 @@ export const useConnectIframe = (c: IConnectIframeConfig) => {
         parent.postMessage({
             type,
             data,
-        })
+        }, "*")
     }
 
     /**
@@ -64,7 +63,7 @@ export const useConnectIframe = (c: IConnectIframeConfig) => {
      * handle message from iframe
      */
     const handleMessage = (event: MessageEvent<Message>) => {
-        config.callback?.(event.data)
+        config.callback?.(event)
     }
 
     /**

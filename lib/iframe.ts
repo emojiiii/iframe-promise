@@ -27,7 +27,7 @@ export const useConnectParent = (c: IConfig) => {
             type,
             uid,
             ...args
-        })
+        }, "*")
         return {
             uid,
             type
@@ -40,12 +40,12 @@ export const useConnectParent = (c: IConfig) => {
      * @param data 
      * @returns 
      */
-    const postPromiseMessage = <T = any>(type: string, data: T) => {
+    const postPromiseMessage = <T = any>(type: string, data?: T) => {
         return new Promise((resolve, reject) => {
             const {uid} = postMessage(type, {
                 data,
                 isPromise: true
-            })
+            }, "*")
             
             const timeout = setTimeout(() => {
                 taskMap.delete(uid)
