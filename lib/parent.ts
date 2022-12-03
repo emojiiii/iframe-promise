@@ -42,7 +42,7 @@ export const useConnectIframe = (c: IConnectIframeConfig) => {
      * @param type 
      * @param data 
      */
-    const postMessage = <T = any>(type: string, data: T) => {
+    const postMessage = <T = any>(type: string, data?: T) => {
         parent.postMessage({
             type,
             data,
