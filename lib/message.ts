@@ -1,24 +1,37 @@
-export interface Message<T = any> {
+export interface Message<T = string, D = any> {
     /**
      * message type
      */
-    type: string;
+    type: T;
     /**
      * message data
      */
-    data: T,
+    data: D,
     /**
      * message id
      */
     uid: string;
     /**
-     * is promise message
+     * message action
      */
-    isPromise?: boolean;
+    action: REQUEST_ACTION
 }
 
-export interface MessageHandler<T = any> {
+/**
+ * request action
+ */
+export enum REQUEST_ACTION {
+    NORMAL = 'normal',
+    PROMISE = 'promise',
+    LISTEN = 'listen',
+    UNLISTEN = 'unlisten'
+}
+
+export interface MessageHandler<T = string, D = any> {
     (message: Message<T>['data']): void
+    action: REQUEST_ACTION
+    type: D
+    uid: string
 }
 
 /**
@@ -30,4 +43,11 @@ export interface MessageHandler<T = any> {
      * @default 5
      */
     timeout?: number
+}
+
+
+interface Function {
+    action: REQUEST_ACTION,
+    type: string,
+    uid: string
 }

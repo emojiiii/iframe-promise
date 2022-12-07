@@ -1,16 +1,24 @@
 import type { IConfig, Message, MessageHandler } from "./message";
 import { getUID } from "./utils";
+import { REQUEST_ACTION } from "./message";
 
 const taskMap = new Map<string, MessageHandler>()
+
+export interface IConnectParentConfig<T> extends IConfig {
+    /**
+     * callback 
+     */
+    callback?: <D>(message: Message<T, D>) => void
+}
 
 /**
  * connect parent window
  * @param c iframe config
  * @returns 
  */
-export const useConnectParent = (c: IConfig) => {
+export const useConnectParent = <T = string>(c: IConnectParentConfig<T>) => {
 
-    const config: IConfig = {
+    const config: IConnectParentConfig<T> = {
         timeout: 5000
     }
 
@@ -21,17 +29,14 @@ export const useConnectParent = (c: IConfig) => {
      * @param type 
      * @param data 
      */
-    const postMessage = (type: string, params?: Record<string, any>) => {
+    const udpRequest = (params?: Record<string, any>) => {
         const uid = getUID()
+        const action = REQUEST_ACTION.NORMAL
         window.parent.postMessage({
-            type,
             uid,
+            action,
             ...params
         }, "*")
-        return {
-            uid,
-            type
-        }
     }
 
     /**
@@ -40,39 +45,107 @@ export const useConnectParent = (c: IConfig) => {
      * @param data 
      * @returns 
      */
-    const postPromiseMessage = <T = any>(type: string, data?: T) => {
-        return new Promise((resolve, reject) => {
-            const {uid} = postMessage(type, {
+    const reqeust = <D = any, K = any>(type: T, data?: D) => {
+        return new Promise<K>((resolve, reject) => {
+            const uid = getUID()
+            const action = REQUEST_ACTION.PROMISE
+            udpRequest({
                 data,
-                isPromise: true
+                type,
+                uid,
+                action
             })
-            
+
             const timeout = setTimeout(() => {
                 taskMap.delete(uid)
                 reject(new Error('timeout'))
             }, config.timeout)
 
-            /**
-             * set message handler by uid
-             */
-            taskMap.set(uid, (data: any) => {
+            const handler = (data: any) => {
                 clearTimeout(timeout)
                 taskMap.delete(uid)
                 resolve(data)
-            })
+            }
+
+            handler.action = action
+            handler.uid = uid
+            handler.type = type
+
+            /**
+             * set message handler by uid
+             */
+            taskMap.set(uid, handler)
         })
     }
 
-    const handleMessage = (evt: MessageEvent<Message>) => {
-        const { data, type, uid } = evt.data
-        if (taskMap.has(uid)) {
-            taskMap.get(uid)?.({
+    /**
+     * 长链接事件, 用于监听指定类型的消息
+     */
+    const listenMessage = (type: string, callback?: (message: Message) => void) => {
+        const uid = getUID()
+        const action = REQUEST_ACTION.LISTEN
+        udpRequest({
+            type,
+            uid,
+            action
+        })
+
+        const handler = (data: any) => {
+            callback?.({
+                uid,
                 type,
-                data
+                ...data
             })
-        } else {
-            // handle message
         }
+        handler.action = action
+        handler.uid = uid
+        handler.type = type
+
+        /**
+         * set message handler by uid
+         */
+        taskMap.set(uid, handler)
+        return uid
+    }
+
+    /**
+     * 关闭指定的长链接任务
+     * @param uid 任务ID
+     */
+    const unlistenMessage = (uid: string) => {
+        const action = REQUEST_ACTION.UNLISTEN
+        const handler = taskMap.get(uid)
+
+        if (handler) {
+            udpRequest({
+                uid,
+                type: handler.type,
+                action
+            })
+            taskMap.delete(uid)
+        }
+        
+    }
+
+    const handleMessage = (evt: MessageEvent<Message<T>>) => {
+        const { data, uid } = evt.data
+
+        const handler = taskMap.get(uid)
+
+        if (handler) {
+            const {action} = handler
+
+            if (action === REQUEST_ACTION.PROMISE || action === REQUEST_ACTION.LISTEN) {
+                /**
+                 * promise response not need uid and type
+                 */
+                return handler(data)
+            }
+        }
+        /**
+         * if not match any handler, then call callback
+         */
+        config.callback?.(evt.data)
     }
 
     const addlistenerMessage = () => {
@@ -86,7 +159,9 @@ export const useConnectParent = (c: IConfig) => {
     return {
         addlistenerMessage,
         removeListenerMessage,
-        postMessage,
-        postPromiseMessage
+        udpRequest,
+        reqeust,
+        listenMessage,
+        unlistenMessage
     }
 }

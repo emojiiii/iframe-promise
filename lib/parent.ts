@@ -1,11 +1,11 @@
-import type { IConfig, Message, MessageHandler } from "./message"
+import { IConfig, Message, MessageHandler } from "./message"
 
 export const parentTaskMap = new Map<string, MessageHandler>()
 
 /**
  * connect iframe window config
  */
-export interface IConnectIframeConfig extends IConfig {
+export interface IConnectIframeConfig<T> extends IConfig {
     /**
      * iframe dom element
      */
@@ -13,16 +13,16 @@ export interface IConnectIframeConfig extends IConfig {
     /**
      * callback 
      */
-     callback?: (message: MessageEvent<Message>) => void
+    callback?: (message: Message<T>) => void
 }
 
 /**
  * connect iframe to post message
  * @param c iframe config
  */
-export const useConnectIframe = (c: IConnectIframeConfig) => {
+export const useConnectIframe = <T = string>(c: IConnectIframeConfig<T>) => {
 
-    const config: IConnectIframeConfig = {
+    const config: IConnectIframeConfig<T> = {
         timeout: 5000
     }
 
@@ -42,28 +42,33 @@ export const useConnectIframe = (c: IConnectIframeConfig) => {
      * @param type 
      * @param data 
      */
-    const postMessage = <T = any>(type: string, data?: T) => {
+    const postMessage = <T = Record<string, any>>(type: string, data?: T) => {
         parent.postMessage({
             type,
-            data,
+            ...data,
         }, "*")
     }
 
     /**
-     * reply message to iframe
+     * reply promise message to iframe
      * @param type 
      * @param data 
      * @returns 
      */
-    const replyPromiseMessage = <T = any>(message: Message<T>) => {
-        window.parent.postMessage(message)
+    const reply = <T = Record<string, any>>(uid: string, data?: T) => {
+        parent.postMessage({
+            uid,
+            ...data
+        })
     }
 
     /**
-     * handle message from iframe
+     * 收到消息后，根据消息类型区分要做的动作
+     * 1. 普通消息不管
+     * 2. promise消息, reply 需要带上uid 
      */
-    const handleMessage = (event: MessageEvent<Message>) => {
-        config.callback?.(event)
+    const handleMessage = (event: MessageEvent<Message<T>>) => {
+        config.callback?.(event.data)
     }
 
     /**
@@ -81,6 +86,6 @@ export const useConnectIframe = (c: IConnectIframeConfig) => {
         postMessage,
         listenMessage,
         unListenMessage,
-        replyPromiseMessage,
+        reply,
     }
 }

@@ -1,14 +1,16 @@
 {
   "name": "@emojiiii/iframe-promise",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "",
   "packageManager": "pnpm@7.17.1",
-  "main": "./dist/index.min.js",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "esbuild ./lib/index.ts --outfile=./dist/index.min.js --bundle --loader:.ts=ts --format=esm",
+    "build:esm": "esbuild ./lib/index.ts --outfile=./dist/index.esm.js --bundle --loader:.ts=ts --format=esm",
+    "build:cjs": "esbuild ./lib/index.ts --outfile=./dist/index.cjs.js --bundle --loader:.ts=ts --format=cjs",
     "build:type": "tsc --emitDeclarationOnly",
-    "build:full": "pnpm build && pnpm build:type"
+    "build:full": "pnpm build:esm && pnpm build:cjs && pnpm build:type"
   },
   "keywords": [
     "iframe",
