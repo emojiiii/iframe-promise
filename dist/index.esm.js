@@ -80,6 +80,9 @@ var useConnectParent = (c) => {
       uid,
       action
     });
+    if (callback) {
+      callback.uid = uid;
+    }
     const handler = (data) => {
       callback == null ? void 0 : callback(__spreadValues({
         uid,
@@ -90,7 +93,6 @@ var useConnectParent = (c) => {
     handler.uid = uid;
     handler.type = type;
     taskMap.set(uid, handler);
-    return uid;
   };
   const unlistenMessage = (uid) => {
     const action = "unlisten" /* UNLISTEN */;

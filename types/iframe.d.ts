@@ -10,11 +10,11 @@ export interface IConnectParentConfig<T> extends IConfig {
  * @param c iframe config
  * @returns
  */
-export declare const useConnectParent: <T = string>(c: IConnectParentConfig<T>) => {
+export declare const useConnectParent: <T = string>(c?: IConnectParentConfig<T> | undefined) => {
     addlistenerMessage: () => void;
     removeListenerMessage: () => void;
     udpRequest: (params?: Record<string, any>) => void;
     reqeust: <D = any, K = any>(type: T, data?: D | undefined) => Promise<K>;
-    listenMessage: (type: string, callback?: ((message: Message) => void) | undefined) => string;
+    listenMessage: (type: string, callback?: ((message: Message) => void) | undefined) => void;
     unlistenMessage: (uid: string) => void;
 };

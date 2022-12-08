@@ -16,7 +16,7 @@ export interface IConnectParentConfig<T> extends IConfig {
  * @param c iframe config
  * @returns 
  */
-export const useConnectParent = <T = string>(c: IConnectParentConfig<T>) => {
+export const useConnectParent = <T = string>(c?: IConnectParentConfig<T>) => {
 
     const config: IConnectParentConfig<T> = {
         timeout: 5000
@@ -90,6 +90,11 @@ export const useConnectParent = <T = string>(c: IConnectParentConfig<T>) => {
             action
         })
 
+
+        if (callback) {
+            callback.uid = uid
+        }
+
         const handler = (data: any) => {
             callback?.({
                 uid,
@@ -105,7 +110,6 @@ export const useConnectParent = <T = string>(c: IConnectParentConfig<T>) => {
          * set message handler by uid
          */
         taskMap.set(uid, handler)
-        return uid
     }
 
     /**

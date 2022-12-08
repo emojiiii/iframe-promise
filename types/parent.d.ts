@@ -17,7 +17,7 @@ export interface IConnectIframeConfig<T> extends IConfig {
  * connect iframe to post message
  * @param c iframe config
  */
-export declare const useConnectIframe: <T = string>(c: IConnectIframeConfig<T>) => {
+export declare const useConnectIframe: <T = string>(c?: IConnectIframeConfig<T> | undefined) => {
     postMessage: <T_1 = Record<string, any>>(type: string, data?: T_1 | undefined) => void;
     listenMessage: () => void;
     unListenMessage: () => void;

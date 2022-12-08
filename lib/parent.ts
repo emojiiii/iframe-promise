@@ -20,7 +20,7 @@ export interface IConnectIframeConfig<T> extends IConfig {
  * connect iframe to post message
  * @param c iframe config
  */
-export const useConnectIframe = <T = string>(c: IConnectIframeConfig<T>) => {
+export const useConnectIframe = <T = string>(c?: IConnectIframeConfig<T>) => {
 
     const config: IConnectIframeConfig<T> = {
         timeout: 5000
